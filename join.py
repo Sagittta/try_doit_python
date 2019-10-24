@@ -9,11 +9,11 @@ class Join:
     def sign_up(self):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
+        j = Join(self.id, self.pwd)
+        result = j.null_check()
+
         try:
             with conn.cursor() as curs:
-
-                j = Join(self.id, self.pwd)
-                result = j.null_check()
 
                 if result == 1:
                     sql = "INSERT INTO profile(prof_num, id, pwd) VALUES (%s, %s, %s)"
