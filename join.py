@@ -6,6 +6,7 @@ class Join:
         self.id = id
         self.pwd = pwd
 
+    # 회원가입 (데이터베이스에 insert)
     def sign_up(self):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
@@ -32,6 +33,7 @@ class Join:
         finally:
             conn.close()
 
+    # id 중복 체크
     def null_check(self):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
