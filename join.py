@@ -7,39 +7,38 @@ class Join:
         self.pwd = pwd
 
     # 회원가입 (데이터베이스에 insert)
-    def sign_up(self):
+    def sign_up(self, id, pwd, pwd_ck):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
-        j = Join(self.id, self.pwd)
-        result = j.null_check()
+        j = Join(id, pwd)
+        result = j.null_check(id, pwd, pwd_ck)
 
         try:
             with conn.cursor() as curs:
-
                 if result == 1:
                     sql = "INSERT INTO profile(prof_num, id, pwd) VALUES (%s, %s, %s)"
-                    value = (0, self.id, self.pwd)
+                    value = (0, id, pwd)
                     curs.execute(sql, value)
 
                     data = curs.fetchall()
 
                     if not data:
                         conn.commit()
-                        print("가입 완료")
+                        print(id + "님 가입 완료되었습니다.")
                     else:
                         conn.rollback()
                         print("가입 실패")
-
         finally:
             conn.close()
 
     # id 중복 체크
-    def null_check(self):
+    def null_check(self, id, pwd, pwd_ck):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
+        j = Join(id, pwd)
         try:
             with conn.cursor() as curs:
-                sql = "SELECT id FROM profile WHERE id='%s'" % self.id
+                sql = "SELECT id FROM profile WHERE id='%s'" % id
                 curs.execute(sql)
                 data = curs.fetchall()
 
@@ -48,14 +47,25 @@ class Join:
 
                     return 0
                 else:
-                    print("사용할 수 있습니다.")
+                    print("사용할 수 있는 아이디입니다.")
 
-                    return 1
+                    result2 = j.pwd_check(pwd, pwd_ck)
+
+                    if result2 == 1:
+                        return 1
         finally:
             conn.close()
 
+    def pwd_check(self, pwd, pwd_ck):
+        if pwd == pwd_ck:
+            print("올바른 비밀번호입니다.")
+            return 1
+        else:
+            print("비밀번호를 다시 입력해주세요.")
+            return 0
 
-id = input("아이디 : ")
-pwd = input("비밀번호 : ")
-j = Join(id, pwd)
-j.sign_up()
+
+# id = input("아이디 : ")
+# pwd = input("비밀번호 : ")
+# j = Join(id, pwd)
+# j.sign_up(id, pwd)
