@@ -1,9 +1,13 @@
 from tkinter import *
 from task_manager import TaskManager
+from profile import Profile
 
 
 class ListScreen:
     def __init__(self):
+        self.tm = TaskManager()
+        self.p = Profile()
+
         CANVAS_SIZE = 600
 
         self.root = Tk()
@@ -20,12 +24,10 @@ class ListScreen:
         lb3.grid(row=7, column=2)
 
         # Add Tasks Part
-        self.task = Entry(self.root, width=40)
-        # self.task.insert(0, "Write Here")
+        self.task = Entry(self.root, width=40, relief="solid", bd=1)
         self.task.grid(row=1, column=0, columnspan=5)
-        # self.task.bind("<Button-1>", self.task.delete(0, 10))
 
-        self.priority = IntVar()
+        self.priority = IntVar(self.root, 1)
         frame = Frame(self.root, relief="solid", bd=1, bg="white")
         frame.grid(row=2, column=0, rowspan=4)
         rd1 = Radiobutton(frame, bg="white", text="중요 & 긴급", value=1, variable=self.priority, command=self.check_priority)
@@ -37,27 +39,27 @@ class ListScreen:
         rd4 = Radiobutton(frame, bg="white", text="중요X & 긴급X", value=4, variable=self.priority, command=self.check_priority)
         rd4.pack()
 
-        self.tag = Entry(self.root, width=20)
+        self.tag = Entry(self.root, width=20, relief="solid", bd=1)
         self.tag.grid(row=2, column=2, columnspan=3)
 
-        self.year = Entry(self.root, width=6)
+        self.year = Entry(self.root, width=6, relief="solid", bd=1)
         self.year.grid(row=3, column=2)
-        self.month = Entry(self.root, width=6)
+        self.month = Entry(self.root, width=6, relief="solid", bd=1)
         self.month.grid(row=3, column=3)
-        self.day = Entry(self.root, width=6)
+        self.day = Entry(self.root, width=6, relief="solid", bd=1)
         self.day.grid(row=3, column=4)
 
-        self.bt_add_task = Button(self.root, bg="white", text="Add Task", width=20)
+        self.bt_add_task = Button(self.root, bg="white", text="Add Task", width=20, command=self.update)
         self.bt_add_task.grid(row=4, column=2, columnspan=3)
 
         # Doing Tasks Part
-        self.task_selected = Label(self.root, text="Empty", width=40, bg="white", relief="solid", bd=1)
+        self.task_selected = Entry(self.root, width=40, bg="white", relief="solid", bd=1)
         self.task_selected.grid(row=8, column=0, columnspan=5)
 
         self.bt_update = Button(self.root, text="Update", fg="blue", width=15, bg="white", command=self.update)
         self.bt_update.grid(row=9, column=0, columnspan=2)
 
-        self.percent = Entry(self.root, width=10)
+        self.percent = Entry(self.root, width=10, relief="solid", bd=1)
         self.percent.grid(row=9, column=3)
         lb4 = Label(self.root, text="%", bg="white")
         lb4.grid(row=9, column=4)
@@ -74,7 +76,7 @@ class ListScreen:
         self.bt_show_list = Button(self.root, text="Sort to Tag", fg="blue", width=15, bg="white", command=self.sort_tag)
         self.bt_show_list.grid(row=2, column=8, columnspan=2)
 
-        self.lb_tasks = Listbox(self.root, width=40)
+        self.lb_tasks = Listbox(self.root, width=40, relief="solid", bd=1)
         self.lb_tasks.grid(row=3, column=5, rowspan=7, columnspan=5)
 
         self.bt_delete = Button(self.root, text="Delete", fg="brown", width=15, bg="white", command=self.delete)
@@ -82,15 +84,48 @@ class ListScreen:
         self.bt_complete = Button(self.root, text="Complete", fg="green", width=15, bg="white", command=self.complete)
         self.bt_complete.grid(row=10, column=8, columnspan=2)
 
-        # self.canvas.pack()
-
         self.root.mainloop()
 
     def show_list(self):
-        pass
+        # 현재 리스트 지우기
+        self.clear_listbox()
+        # self.tm.tasks db 연결
+        result = self.tm.check_listnum(self.task.get())
+        # 리스트 띄우기
+        for task in self.tm.tasks:
+            self.lb_tasks.insert("end", task)
+
+    def update(self):
+        # 작성한 거 추가하기
+        self.tm.tasks.append(self.task.get())
+        # 현재 리스트 지우기
+        self.clear_listbox()
+        # 리스트 띄우기
+        for task in self.tm.tasks:
+            self.lb_tasks.insert("end", task)
+
+        prof_num = self.p.prof_num
+        content = self.task.get()
+        priority = self.check_priority()
+        tag = self.tag.get()
+        date = str(self.year.get()) + str(self.month.get()) + str(self.day.get())
+
+        self.tm.add_task(prof_num, content, priority, tag, date)
+
+    def delete(self):
+        # 리스트 박스에서 선택된 항목 찾기
+        task = self.lb_tasks.get("active")
+        if task in self.tm.tasks:
+            # 지우기
+            self.tm.tasks.remove(task)
+        # 리스트 보여주기
+        self.show_list()
+
+    def clear_listbox(self):
+        self.lb_tasks.delete(0, "end")
 
     def check_priority(self):
-        pass
+        return str(self.priority.get())
 
     def sort_priority(self):
         pass
@@ -98,13 +133,7 @@ class ListScreen:
     def sort_tag(self):
         pass
 
-    def delete(self):
-        pass
-
     def complete(self):
-        pass
-
-    def update(self):
         pass
 
     def open(self):
