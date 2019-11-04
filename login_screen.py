@@ -5,8 +5,6 @@ from join import Join
 
 class LoginScreen:
     def __init__(self):
-        self.j = Join("id", "pwd")
-        self.l = Login("id", "pwd")
 
         CANVAS_SIZE = 600
 
@@ -56,6 +54,9 @@ class LoginScreen:
         self.bt2 = Button(self.root, text="Login", fg="blue", bg="white", width="6", command=self.login)
         self.bt2.grid(row=4, column=4)
 
+        self.j = Join("id", "pwd")
+        self.l = Login("id", "pwd")
+
         # self.canvas.pack()
 
         self.root.mainloop()
@@ -73,7 +74,8 @@ class LoginScreen:
     def login(self):
         id2 = self.login_id.get()
         pwd2 = self.login_pwd.get()
-        result = self.l.sign_in(id2, pwd2)
+        self.l.sign_in(id2, pwd2)
+        # return id2
         # print("login success")
 
 

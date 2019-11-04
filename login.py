@@ -1,6 +1,7 @@
 from tkinter import messagebox
 from tkinter import *
 from list_screen import ListScreen
+from profile import Profile
 
 import pymysql
 
@@ -57,10 +58,16 @@ class Login:
         result_id = l.check_id(id)
         result_pwd = l.check_pwd(id, pwd)
 
+        self.id = id
+        self.pwd = pwd
+
         if result_id == 1:
             if result_pwd == 1:
                 messagebox.showinfo("Login", (id+"님 로그인 완료되었습니다."))
                 ListScreen()
+
+                p = Profile
+                p.id = id
                 # from login_screen import LoginScreen
                 # LoginScreen.root.destroy()
             else:

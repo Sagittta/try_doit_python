@@ -129,7 +129,9 @@ class TaskManager:
             conn.close()
 
     def complete_task(self):
-        pass
+        # 일 완료했으면 리턴 1
+        # 못 했으면 리턴 0
+        return 1
 
     def open_closet(self):
         pass

@@ -90,7 +90,7 @@ class ListScreen:
         pass
 
     def check_priority(self):
-        self.label.config(text="Priority = " + str(self.priority.get()))
+        pass
 
     def sort_priority(self):
         pass
