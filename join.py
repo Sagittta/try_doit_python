@@ -1,3 +1,5 @@
+from tkinter import messagebox
+
 import pymysql
 
 
@@ -24,10 +26,10 @@ class Join:
 
                     if not data:
                         conn.commit()
-                        print(id + "님 가입 완료되었습니다.")
+                        messagebox.showinfo("Join", (id + "님 가입 완료되었습니다."))
                     else:
                         conn.rollback()
-                        print("가입 실패")
+                        messagebox.showinfo("Join", "가입 실패")
         finally:
             conn.close()
 
@@ -43,11 +45,11 @@ class Join:
                 data = curs.fetchall()
 
                 if data:
-                    print("다른 아이디를 사용해주세요.")
+                    messagebox.showinfo("Join", "다른 아이디를 사용해주세요.")
 
                     return 0
                 else:
-                    print("사용할 수 있는 아이디입니다.")
+                    messagebox.showinfo("Join", "사용할 수 있는 아이디입니다.")
 
                     result2 = j.pwd_check(pwd, pwd_ck)
 
@@ -58,10 +60,10 @@ class Join:
 
     def pwd_check(self, pwd, pwd_ck):
         if pwd == pwd_ck:
-            print("올바른 비밀번호입니다.")
+            messagebox.showinfo("Join", "올바른 비밀번호입니다.")
             return 1
         else:
-            print("비밀번호를 다시 입력해주세요.")
+            messagebox.showinfo("Join", "비밀번호를 다시 입력해주세요.")
             return 0
 
 

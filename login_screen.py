@@ -73,7 +73,7 @@ class LoginScreen:
     def login(self):
         id2 = self.login_id.get()
         pwd2 = self.login_pwd.get()
-        self.l.sign_in(id2, pwd2)
+        result = self.l.sign_in(id2, pwd2)
         # print("login success")
 
 

@@ -1,3 +1,7 @@
+from tkinter import messagebox
+from tkinter import *
+from list_screen import ListScreen
+
 import pymysql
 
 
@@ -22,7 +26,7 @@ class Login:
                     return 0
         # id 가 존재하지 않을 때 TypeError 가 발생하므로 예외 처리를 한다.
         except TypeError:
-            print("아이디를 잘못 입력하셨습니다.")
+            messagebox.showinfo("Login", "아이디를 잘못 입력하셨습니다.")
             return 0
         finally:
             conn.close()
@@ -55,9 +59,12 @@ class Login:
 
         if result_id == 1:
             if result_pwd == 1:
-                print(id, "님 로그인 완료되었습니다.")
+                messagebox.showinfo("Login", (id+"님 로그인 완료되었습니다."))
+                ListScreen()
+                # from login_screen import LoginScreen
+                # LoginScreen.root.destroy()
             else:
-                print("비밀번호를 잘못 입력하셨습니다.")
+                messagebox.showinfo("Login", "비밀번호를 잘못 입력하셨습니다.")
 
 
 # id = input("아이디 입력 : ")
