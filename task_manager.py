@@ -1,12 +1,16 @@
-import pymysql
 from task import Task
+# from list_screen import ListScreen
+
+import pymysql
 
 
 class TaskManager:
     def __init__(self):
-        self.task = []
+        self.t = Task
+        self.task = self.t.task
 
-    def add_task(self, prof_num, content, priority, tag, date, percent):
+    # DB 연결된 메소드
+    def add_task(self, prof_num, content, priority, tag, date):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
         tm = TaskManager()
 
@@ -16,8 +20,8 @@ class TaskManager:
         try:
             with conn.cursor() as curs:
                 if result == 1:
-                    sql = "INSERT INTO task(listnum, prof_num, content, prio, tag, date, percent) VALUES (%s, %s, %s, %s, %s, %s, %s)"
-                    value = (0, prof_num, content, priority, tag, date, percent)
+                    sql = "INSERT INTO task(listnum, prof_num, content, prio, tag, date) VALUES (%s, %s, %s, %s, %s, %s)"
+                    value = (0, prof_num, content, priority, tag, date)
                     curs.execute(sql, value)
 
                     data = curs.fetchall()
@@ -102,6 +106,27 @@ class TaskManager:
         finally:
             conn.close()
 
+    def find_listnum(self, content):
+        conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
+
+        try:
+            with conn.cursor() as curs:
+                sql = "SELECT listnum FROM task WHERE content = '%s'" % content
+                curs.execute(sql)
+                t_num = int(str(curs.fetchone()[0]))
+
+                if t_num:
+                    return t_num
+                else:
+                    print("t_num == 0")
+                    return 0
+        # listnum 이 존재하지 않을 때 Type Error 발생하므로 처리해줌
+        except TypeError:
+            print("TypeError 발생")
+            return 0
+        finally:
+            conn.close()
+
     def delete_task(self, listnum):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
         tm = TaskManager()
@@ -139,4 +164,4 @@ class TaskManager:
 
 if __name__ == '__main__':
     tm = TaskManager()
-    tm.delete_task(10)
+    tm.update_listbox()
