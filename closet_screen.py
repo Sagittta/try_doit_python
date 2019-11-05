@@ -3,10 +3,14 @@ from tkinter import messagebox
 from collections import Counter
 
 from task_manager import TaskManager
+from profile import Profile
 
 
 class ClosetScreen:
+    rb1 = None
+
     def __init__(self):
+        self.p = Profile()
         CANVAS_SIZE = 600
 
         self.item_hat = ["img/h1.png", "img/h2.png", "img/h3.png", "img/h4.png"]
@@ -139,15 +143,19 @@ class ClosetScreen:
     def get_name(self):
         name = self.name.get()
         print(name)
-        return name
+
+        self.p.set_name(name)
 
     # 아이템 얻은 거 보여줌
-    def update_closet(self):
+    def update_closet(self, result):
+        res = result
         tm = TaskManager()
-        result = tm.complete_task()
-        if result == 1:
+        self.rd1.configure(state='normal')
+        self.rd1.update()
+        if res == 1:
             if tm.count >= 1:
                 self.get_top.append(self.item_top[0])
+
             elif tm.count >= 5:
                 self.get_bottom.append(self.item_bottom[0])
             elif tm.count >= 10:

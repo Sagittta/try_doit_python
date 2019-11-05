@@ -1,6 +1,9 @@
 from tkinter import *
+from tkinter import messagebox
+
 from task_manager import TaskManager
 from profile import Profile
+from closet_screen import ClosetScreen
 
 
 class ListScreen:
@@ -49,7 +52,7 @@ class ListScreen:
         self.day = Entry(self.root, width=6, relief="solid", bd=1)
         self.day.grid(row=3, column=4)
 
-        self.bt_add_task = Button(self.root, bg="white", text="Add Task", width=20, command=self.update)
+        self.bt_add_task = Button(self.root, bg="white", text="Add Task", width=20, command=self.add)
         self.bt_add_task.grid(row=4, column=2, columnspan=3)
 
         # Doing Tasks Part
@@ -71,46 +74,70 @@ class ListScreen:
         self.bt_show_list = Button(self.root, text="Show List", fg="blue", width=40, bg="white", command=self.show_list)
         self.bt_show_list.grid(row=1, column=5, columnspan=5)
 
-        self.bt_show_list = Button(self.root, text="Sort to Priority", fg="blue", width=15, bg="white", command=self.sort_priority)
-        self.bt_show_list.grid(row=2, column=5, columnspan=2)
-        self.bt_show_list = Button(self.root, text="Sort to Tag", fg="blue", width=15, bg="white", command=self.sort_tag)
-        self.bt_show_list.grid(row=2, column=8, columnspan=2)
+        self.bt_show_list = Button(self.root, text="Sort", fg="blue", width=40, bg="white", command=self.sort)
+        self.bt_show_list.grid(row=2, column=5, columnspan=5)
 
         self.lb_tasks = Listbox(self.root, width=40, relief="solid", bd=1)
         self.lb_tasks.grid(row=3, column=5, rowspan=7, columnspan=5)
 
         self.bt_delete = Button(self.root, text="Delete", fg="brown", width=15, bg="white", command=self.delete)
         self.bt_delete.grid(row=10, column=5, columnspan=2)
-        self.bt_complete = Button(self.root, text="Complete", fg="green", width=15, bg="white", command=self.complete)
+        self.bt_complete = Button(self.root, text="Doing Tasks", fg="blue", width=8, bg="white", command=self.list_select)
+        self.bt_complete.grid(row=10, column=7)
+        self.bt_complete = Button(self.root, text="Complete", fg="green", width=15, bg="white", command=self.closet)
         self.bt_complete.grid(row=10, column=8, columnspan=2)
 
         self.root.mainloop()
 
+    def list_select(self):
+        # 리스트 박스에서 선택된 항목 찾기
+        task = self.lb_tasks.get("active")
+        self.task_selected.delete(0, "end")
+        self.task_selected.insert(0, task)
+
     def show_list(self):
         # 현재 리스트 지우기
         self.clear_listbox()
+
         # self.tm.tasks db 연결
-        result = self.tm.check_listnum(self.task.get())
+        # result = self.tm.find_listnum(self.task.get())
         # 리스트 띄우기
         for task in self.tm.tasks:
             self.lb_tasks.insert("end", task)
+        print(self.tm.tasks)
 
-    def update(self):
+    def add(self):
         # 작성한 거 추가하기
-        self.tm.tasks.append(self.task.get())
+        lb = self.task.get()
+        self.tm.tasks.append(lb)
         # 현재 리스트 지우기
         self.clear_listbox()
         # 리스트 띄우기
         for task in self.tm.tasks:
             self.lb_tasks.insert("end", task)
 
-        prof_num = self.p.prof_num
-        content = self.task.get()
-        priority = self.check_priority()
-        tag = self.tag.get()
-        date = str(self.year.get()) + str(self.month.get()) + str(self.day.get())
+        self.tm.add_task(lb)
 
-        self.tm.add_task(prof_num, content, priority, tag, date)
+    def update(self):
+        # 작성한 거 추가하기
+        lb = self.lb_tasks.get("active")
+        if lb != self.task_selected.get():
+            past = self.lb_tasks.get("active")
+            self.tm.tasks.remove(past)
+            self.tm.tasks.append(self.task_selected.get())
+        # 현재 리스트 지우기
+        self.clear_listbox()
+        # 리스트 띄우기
+        for task in self.tm.tasks:
+            self.lb_tasks.insert("end", task)
+
+        content = lb
+        percent = self.percent.get()
+        if percent == "":
+            percent = 0
+        listnum = self.tm.get_listnum(content)
+        print(content, " + ", percent, "+", listnum)
+        self.tm.update_task(listnum, content, percent)
 
     def delete(self):
         # 리스트 박스에서 선택된 항목 찾기
@@ -120,6 +147,9 @@ class ListScreen:
             self.tm.tasks.remove(task)
         # 리스트 보여주기
         self.show_list()
+        # DB 에서 task 항목을 지움
+        listnum = self.tm.get_listnum(task)
+        self.tm.delete_task(listnum)
 
     def clear_listbox(self):
         self.lb_tasks.delete(0, "end")
@@ -127,17 +157,27 @@ class ListScreen:
     def check_priority(self):
         return str(self.priority.get())
 
-    def sort_priority(self):
-        pass
-
-    def sort_tag(self):
-        pass
-
-    def complete(self):
-        pass
+    def sort(self):
+        print(type(self.tm.tasks))
+        self.tm.tasks.sort()
+        self.show_list()
 
     def open(self):
-        pass
+        # 바꿔야 함
+        ClosetScreen()
+
+    def closet(self):
+        select = self.lb_tasks.get("active")
+        result = self.tm.complete_task(select)
+        # 현재 리스트 지우기
+        self.clear_listbox()
+        # 리스트 띄우기
+        for task in self.tm.tasks:
+            self.lb_tasks.insert("end", task)
+        print(self.tm.tasks)
+        # 여기가 문제 !
+        if result == 1:
+            self.c.update_closet(result)
 
 
 if __name__ == '__main__':
