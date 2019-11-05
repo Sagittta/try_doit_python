@@ -7,6 +7,8 @@ from closet_screen import ClosetScreen
 
 
 class ListScreen:
+    global count
+    # 화면 구성
     def __init__(self):
         self.tm = TaskManager()
         self.p = Profile()
@@ -89,23 +91,23 @@ class ListScreen:
 
         self.root.mainloop()
 
+    # 리스트 박스에서 선택된 항목 찾기
     def list_select(self):
-        # 리스트 박스에서 선택된 항목 찾기
         task = self.lb_tasks.get("active")
         self.task_selected.delete(0, "end")
         self.task_selected.insert(0, task)
 
+    # 리스트 박스에 할 일 목록 보여줌
     def show_list(self):
         # 현재 리스트 지우기
         self.clear_listbox()
 
-        # self.tm.tasks db 연결
-        # result = self.tm.find_listnum(self.task.get())
         # 리스트 띄우기
         for task in self.tm.tasks:
             self.lb_tasks.insert("end", task)
-        print(self.tm.tasks)
+        # print(self.tm.tasks)
 
+    # 할 일 목록에 추가하고 DB 에 추가함
     def add(self):
         # 작성한 거 추가하기
         lb = self.task.get()
@@ -115,9 +117,11 @@ class ListScreen:
         # 리스트 띄우기
         for task in self.tm.tasks:
             self.lb_tasks.insert("end", task)
-
+        
+        # DB 에 값 보냄
         self.tm.add_task(lb)
 
+    # 할 일 목록 업데이트
     def update(self):
         # 작성한 거 추가하기
         lb = self.lb_tasks.get("active")
@@ -139,6 +143,7 @@ class ListScreen:
         print(content, " + ", percent, "+", listnum)
         self.tm.update_task(listnum, content, percent)
 
+    # 리스트 박스에서 제거하고 DB 에서도 제거하기
     def delete(self):
         # 리스트 박스에서 선택된 항목 찾기
         task = self.lb_tasks.get("active")
@@ -147,38 +152,47 @@ class ListScreen:
             self.tm.tasks.remove(task)
         # 리스트 보여주기
         self.show_list()
-        # DB 에서 task 항목을 지움
+        
         listnum = self.tm.get_listnum(task)
+        # DB 에서 task 항목을 지움
         self.tm.delete_task(listnum)
 
+    # 리스트 박스에 보여지는 것을 다 지움
     def clear_listbox(self):
         self.lb_tasks.delete(0, "end")
 
+    # 우선순위 체크
     def check_priority(self):
         return str(self.priority.get())
 
+    # 정렬하는 함수
     def sort(self):
         print(type(self.tm.tasks))
         self.tm.tasks.sort()
         self.show_list()
 
+    # ClosetScreen 불러오는 함수
     def open(self):
-        # 바꿔야 함
-        ClosetScreen()
+        ClosetScreen(count)
 
+    # 할 일 완료했을 때 목록과 DB 에서 제거하고 count 를 세서 ClosetScreen 으로 보내는 함수
     def closet(self):
         select = self.lb_tasks.get("active")
         result = self.tm.complete_task(select)
+        count = self.tm.get_count()
         # 현재 리스트 지우기
         self.clear_listbox()
         # 리스트 띄우기
         for task in self.tm.tasks:
             self.lb_tasks.insert("end", task)
         print(self.tm.tasks)
-        # 여기가 문제 !
+
         if result == 1:
-            self.c.update_closet(result)
+            # count 값을 넘김
+            c = ClosetScreen(count)
+            c.update_closet()
 
 
 if __name__ == '__main__':
+    # c = ClosetScreen()
     ls = ListScreen()

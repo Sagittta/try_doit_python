@@ -1,3 +1,15 @@
+'''
+
+2417 전은정
+
+투두리스트 프로그램으로, 보다 재밌게 할 일을 해낼 수 있게 옷입히기 게임과 결합시킴.
+
+login_screen.py 에서 실행하면 됩니다.
+중간에 나오는 Tk 창은 닫으면 안 돼요.
+DB 와 연동하여 좀 느리니 기다려 주세요.
+
+'''
+
 from tkinter import *
 
 from login import Login

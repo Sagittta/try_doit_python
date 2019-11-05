@@ -6,17 +6,17 @@ from task_manager import TaskManager
 from profile import Profile
 
 
+# 옷장 화면 보여주는 클래스
 class ClosetScreen:
-    rb1 = None
-
-    def __init__(self):
+    # 화면 구성
+    def __init__(self, count):
+        self.count = count
         self.p = Profile()
-        CANVAS_SIZE = 600
 
-        self.item_hat = ["img/h1.png", "img/h2.png", "img/h3.png", "img/h4.png"]
-        self.item_top = ["img/t1.png", "img/t2.png", "img/t3.png", "img/t4.png"]
-        self.item_bottom = ["img/b1.png", "img/b2.png", "img/b3.png", "img/b4.png"]
-        self.item_shoes = ["img/s1.png", "img/s2.png", "img/s3.png", "img/s4.png"]
+        self.item_hat = ["h1.png", "h2.png", "h3.png", "h4.png"]
+        self.item_top = ["t1.png", "t2.png", "t3.png", "t4.png"]
+        self.item_bottom = ["b1.png", "b2.png", "b3.png", "b4.png"]
+        self.item_shoes = ["s1.png", "s2.png", "s3.png", "s4.png"]
         self.used_hat = []
         self.used_top = []
         self.used_bottom = []
@@ -27,7 +27,9 @@ class ClosetScreen:
         self.get_bottom = []
         self.get_shoes = []
 
-        self.root = Tk()
+        CANVAS_SIZE = 600
+
+        self.root = Toplevel()
         self.root.title("Try, Do it !")
         self.root.configure(bg="white")
         self.root.geometry(str(CANVAS_SIZE+800) + "x" + str(CANVAS_SIZE+100) + "+100+50")
@@ -45,39 +47,39 @@ class ClosetScreen:
         self.bt_often_item.grid(row=1, column=2)
 
         # 기본 이미지
-        self.hi = PhotoImage(file="img/head.png")
-        self.head = Label(self.root, image=self.hi)
+        hi = PhotoImage(file="head.png")
+        self.head = Label(self.root, image=hi)
         self.head.grid(row=2, column=0, columnspan=2)
 
-        self.ti = PhotoImage(file="img/top.png")
-        self.top = Label(self.root, image=self.ti)
+        ti = PhotoImage(file="top.png")
+        self.top = Label(self.root, image=ti)
         self.top.grid(row=3, column=0, columnspan=2)
 
-        self.bi = PhotoImage(file="img/bottom.png")
-        self.bottom = Label(self.root, image=self.bi)
+        bi = PhotoImage(file="bottom.png")
+        self.bottom = Label(self.root, image=bi)
         self.bottom.grid(row=4, column=0, columnspan=2)
 
-        self.fi = PhotoImage(file="img/shoes.png")
-        self.feet = Label(self.root, image=self.fi)
+        fi = PhotoImage(file="shoes.png")
+        self.feet = Label(self.root, image=fi)
         self.feet.grid(row=5, column=0, columnspan=2)
 
         # 옷이랑 아이템 이미지
-        h1 = PhotoImage(file="img/a.png")
-        h2 = PhotoImage(file="img/a.png")
-        h3 = PhotoImage(file="img/a.png")
-        h4 = PhotoImage(file="img/a.png")
-        t1 = PhotoImage(file="img/a.png")
-        t2 = PhotoImage(file="img/a.png")
-        t3 = PhotoImage(file="img/a.png")
-        t4 = PhotoImage(file="img/a.png")
-        b1 = PhotoImage(file="img/a.png")
-        b2 = PhotoImage(file="img/a.png")
-        b3 = PhotoImage(file="img/a.png")
-        b4 = PhotoImage(file="img/a.png")
-        s1 = PhotoImage(file="img/a.png")
-        s2 = PhotoImage(file="img/a.png")
-        s3 = PhotoImage(file="img/a.png")
-        s4 = PhotoImage(file="img/a.png")
+        h1 = PhotoImage(file="h1.png")
+        h2 = PhotoImage(file="h2.png")
+        h3 = PhotoImage(file="a.png")
+        h4 = PhotoImage(file="a.png")
+        t1 = PhotoImage(file="t1.png")
+        t2 = PhotoImage(file="t2.png")
+        t3 = PhotoImage(file="a.png")
+        t4 = PhotoImage(file="a.png")
+        b1 = PhotoImage(file="b1.png")
+        b2 = PhotoImage(file="b2.png")
+        b3 = PhotoImage(file="a.png")
+        b4 = PhotoImage(file="a.png")
+        s1 = PhotoImage(file="s1.png")
+        s2 = PhotoImage(file="s2.png")
+        s3 = PhotoImage(file="a.png")
+        s4 = PhotoImage(file="a.png")
 
         # 모자
         self.hat_selected = IntVar(self.root)
@@ -127,6 +129,9 @@ class ClosetScreen:
         self.rd15.grid(row=1, column=4)
         self.rd16 = Radiobutton(f4, bg="white", value=4, image=s4, variable=self.shoe_selected, state='disabled', command=self.select_shoes)
         self.rd16.grid(row=1, column=5)
+        
+        # count 개수를 세서 옷장을 업그레이드 해준다.
+        self.update_closet()
 
         self.root.mainloop()
 
@@ -146,52 +151,77 @@ class ClosetScreen:
 
         self.p.set_name(name)
 
-    # 아이템 얻은 거 보여줌
-    def update_closet(self, result):
-        res = result
-        tm = TaskManager()
-        self.rd1.configure(state='normal')
-        self.rd1.update()
-        if res == 1:
-            if tm.count >= 1:
-                self.get_top.append(self.item_top[0])
+    # count 개수를 세서 아이템 얻은 거 쓸 수 있도록 해줌
+    def update_closet(self):
+        if self.count >= 1:
+            self.get_top.append(self.item_top[0])
+            self.rd5.configure(state='normal')
+            self.rd5.update()
+        if self.count >= 5:
+            self.get_bottom.append(self.item_bottom[0])
+            self.rd9.configure(state='normal')
+            self.rd9.update()
+        if self.count >= 10:
+            self.get_shoes.append(self.item_shoes[0])
+            self.rd13.configure(state='normal')
+            self.rd13.update()
+        if self.count >= 15:
+            self.get_hat.append(self.item_hat[0])
+            self.rd1.configure(state='normal')
+            self.rd1.update()
+        if self.count >= 25:
+            self.get_top.append(self.item_top[1])
+            self.rd6.configure(state='normal')
+            self.rd6.update()
+        if self.count >= 35:
+            self.get_bottom.append(self.item_bottom[1])
+            self.rd10.configure(state='normal')
+            self.rd10.update()
+        if self.count >= 45:
+            self.get_shoes.append(self.item_shoes[1])
+            self.rd14.configure(state='normal')
+            self.rd14.update()
+        if self.count >= 55:
+            self.get_hat.append(self.item_hat[1])
+            self.rd2.configure(state='normal')
+            self.rd2.update()
+        if self.count >= 65:
+            self.get_top.append(self.item_top[2])
+            self.rd7.configure(state='normal')
+            self.rd7.update()
+        if self.count >= 75:
+            self.get_bottom.append(self.item_bottom[2])
+            self.rd11.configure(state='normal')
+            self.rd11.update()
+        if self.count >= 85:
+            self.get_shoes.append(self.item_shoes[2])
+            self.rd15.configure(state='normal')
+            self.rd15.update()
+        if self.count >= 95:
+            self.get_hat.append(self.item_hat[2])
+            self.rd3.configure(state='normal')
+            self.rd3.update()
+        if self.count >= 135:
+            self.get_top.append(self.item_top[3])
+            self.rd8.configure(state='normal')
+            self.rd8.update()
+        if self.count >= 165:
+            self.get_bottom.append(self.item_bottom[3])
+            self.rd12.configure(state='normal')
+            self.rd12.update()
+        if self.count >= 185:
+            self.get_shoes.append(self.item_shoes[3])
+            self.rd16.configure(state='normal')
+            self.rd16.update()
+        if self.count >= 200:
+            self.get_hat.append(self.item_hat[3])
+            self.rd4.configure(state='normal')
+            self.rd4.update()
 
-            elif tm.count >= 5:
-                self.get_bottom.append(self.item_bottom[0])
-            elif tm.count >= 10:
-                self.get_shoes.append(self.item_shoes[0])
-            elif tm.count >= 15:
-                self.get_hat.append(self.item_hat[0])
-            elif tm.count >= 25:
-                self.get_top.append(self.item_top[1])
-            elif tm.count >= 35:
-                self.get_bottom.append(self.item_bottom[1])
-            elif tm.count >= 45:
-                self.get_shoes.append(self.item_shoes[1])
-            elif tm.count >= 55:
-                self.get_hat.append(self.item_hat[1])
-            elif tm.count >= 65:
-                self.get_top.append(self.item_top[2])
-            elif tm.count >= 75:
-                self.get_bottom.append(self.item_bottom[2])
-            elif tm.count >= 85:
-                self.get_shoes.append(self.item_shoes[2])
-            elif tm.count >= 95:
-                self.get_hat.append(self.item_hat[2])
-            elif tm.count >= 135:
-                self.get_top.append(self.item_top[3])
-            elif tm.count >= 165:
-                self.get_bottom.append(self.item_bottom[3])
-            elif tm.count >= 185:
-                self.get_shoes.append(self.item_shoes[3])
-            elif tm.count >= 200:
-                self.get_hat.append(self.item_hat[3])
-
+    # 선택된 모자 아이템으로 캐릭터가 바뀌도록 함.
     def select_hat(self):
-        if len(self.get_hat) == 1:
-            self.rd1.configure(status='active')
         hat = str(self.hat_selected.get())
-        hf = "img/h" + hat + ".png"
+        hf = "h" + hat + ".png"
         # if self.used_item
         hi = PhotoImage(file=hf)
         self.head.configure(image=hi)
@@ -201,19 +231,10 @@ class ClosetScreen:
             print(item)
         print("---")
 
+    # 선택된 상의 아이템으로 캐릭터가 바뀌도록 함.
     def select_top(self):
         top = str(self.top_selected.get())
-        tf = ""
-        if top == "1":
-            tf = self.item_hat[0]
-        elif top == "2":
-            tf = self.item_hat[1]
-        elif top == "3":
-            tf = self.item_hat[2]
-        elif top == "4":
-            tf = self.item_hat[3]
-
-        # tf = "img/t" + top + ".png"
+        tf = "t" + top + ".png"
         ti = PhotoImage(file=tf)
         self.top.configure(image=ti)
         self.top.image = ti
@@ -222,9 +243,10 @@ class ClosetScreen:
             print(item)
         print("---")
 
+    # 선택된 하의 아이템으로 캐릭터가 바뀌도록 함.
     def select_bottom(self):
         bottom = str(self.bottom_selected.get())
-        bf = "img/b" + bottom + ".png"
+        bf = "b" + bottom + ".png"
         bi = PhotoImage(file=bf)
         self.bottom.configure(image=bi)
         self.bottom.image = bi
@@ -233,9 +255,10 @@ class ClosetScreen:
             print(item)
         print("---")
 
+    # 선택된 신발 아이템으로 캐릭터가 바뀌도록 함.
     def select_shoes(self):
         shoes = str(self.shoe_selected.get())
-        sf = "img/s" + shoes + ".png"
+        sf = "s" + shoes + ".png"
         si = PhotoImage(file=sf)
         self.feet.configure(image=si)
         self.feet.image = si

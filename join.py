@@ -13,6 +13,7 @@ class Join:
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
         j = Join(id, pwd)
+        # id 중복 체크 및 비밀번호 사용 가능한지 체크
         result = j.null_check(id, pwd, pwd_ck)
 
         try:
@@ -58,6 +59,7 @@ class Join:
         finally:
             conn.close()
 
+    # 비밀번호와 비밀번호 확인이 같은지 체크
     def pwd_check(self, pwd, pwd_ck):
         if pwd == pwd_ck:
             messagebox.showinfo("Join", "올바른 비밀번호입니다.")

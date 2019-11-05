@@ -2,13 +2,12 @@ import pymysql
 
 
 class TaskManager:
-    count = 0
-
     def __init__(self):
-
+        self.count = 0
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
         self.tasks = []
 
+        # DB 에서 할 일 목록 불러옴 -> self.tasks 리스트에 넣음
         try:
             with conn.cursor() as curs:
                 sql = "SELECT content FROM task"
@@ -16,15 +15,13 @@ class TaskManager:
                 rows = curs.fetchall()
                 row = rows[0]
                 row_a = row[0]
-                #l_rows = list(rows)
                 print(row_a)
                 for row in rows:
-                    #foo, bar = l_rows
                     self.tasks.append(row[0])
         finally:
             conn.close()
 
-    # DB 연결된 메소드
+    # DB 에 할 일 추가하는 메소드
     def add_task(self, content):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
         tm = TaskManager()
@@ -47,6 +44,7 @@ class TaskManager:
         finally:
             conn.close()
 
+    # DB 에 있는 할 일과 달성율 업데이트하는 메소드
     def update_task(self, listnum, content, percent):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
         tm = TaskManager()
@@ -61,9 +59,8 @@ class TaskManager:
         try:
             with conn.cursor() as curs:
                 if result == 1:
-                    sql = "UPDATE task SET content='%s', percent='%s' WHERE listnum='%s'"
-                    value = (content, per, ln)
-                    curs.execute(sql, value)
+                    sql = "UPDATE task SET content='%s', percent='%s' WHERE listnum='%s'" % (content, per, ln)
+                    curs.execute(sql)
 
                     data = curs.fetchall()
 
@@ -78,6 +75,7 @@ class TaskManager:
         finally:
             conn.close()
 
+    # listnum 리턴하는 함수
     def get_listnum(self, content):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
@@ -99,6 +97,7 @@ class TaskManager:
         finally:
             conn.close()
 
+    # listnum 체크하는 함수
     def check_task(self, listnum):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
@@ -120,6 +119,7 @@ class TaskManager:
         finally:
             conn.close()
 
+    # listnum 가져오는 함수 (listnum 은 DB 에 add 할 때 자동으로 생성되기 때문)
     def find_listnum(self, content):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
 
@@ -141,6 +141,7 @@ class TaskManager:
         finally:
             conn.close()
 
+    # 할 일 삭제하는 함수
     def delete_task(self, listnum):
         conn = pymysql.connect(host='localhost', user='root', password='mirim2', db='project', charset='utf8')
         tm = TaskManager()
@@ -169,8 +170,10 @@ class TaskManager:
         finally:
             conn.close()
 
+    # 할 일 완료 시 DB 와 목록에서 제거하고 count 증가하는 함수
     def complete_task(self, task):
         self.count += 1
+        print(self.count, "카운트")
         listnum = self.find_listnum(task)
         result = self.delete_task(listnum)
         self.tasks.remove(task)
@@ -180,8 +183,9 @@ class TaskManager:
         else:
             return 0
 
-    def open_closet(self):
-        pass
+    # count 리턴하는 함수
+    def get_count(self):
+        return self.count
 
 
 
