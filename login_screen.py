@@ -1,4 +1,5 @@
 from tkinter import *
+
 from login import Login
 from join import Join
 
@@ -74,9 +75,8 @@ class LoginScreen:
     def login(self):
         id2 = self.login_id.get()
         pwd2 = self.login_pwd.get()
+        self.root.destroy()
         self.l.sign_in(id2, pwd2)
-        # return id2
-        # print("login success")
 
 
 if __name__ == '__main__':
